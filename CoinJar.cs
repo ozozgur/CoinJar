@@ -3,47 +3,42 @@ using System.Collections.Generic;
 
 public class Coin
 {
-    private int value;
+	public Type Mint { get; private set; }
 	
-    public int Value { get { return this.value; } }
+	public int Value { get; private set; }
 	
-	private float volume;
+	public float Volume { get; private set; }
 	
-	public float Volume { get { return this.volume; } }
-	
-	public Coin(int value, float volume)
+	public Coin(Type mint, int value, float volume)
 	{
-		this.value = value;
-		this.volume = volume;
+		this.Mint = mint;
+		this.Value = value;
+		this.Volume = volume;
 	}
 }
 
 public class CoinJar
 {
 	private List<Coin> Coins { get; set; }
-
-	private float totalVolume = 32;
 	
-	public float TotalVolume { get { return this.totalVolume; } }
+	public float TotalVolume { get; private set; }
 	
-	private float usedVolume = 0f;
-	
-	public float UsedVolume { get { return this.usedVolume; } }
-	
-	// stored in cents
-	private int totalValue = 0;
+	public float UsedVolume { get; private set; }
 	
 	// returned in dollars
-	public float TotalValue { get { return this.totalValue / 100.0f; } }
+	public float TotalValue { get; private set; }
 	
 	public CoinJar()
 	{
 		this.Coins = new List<Coin>();
+		this.TotalValue = 0;
+		this.TotalVolume = 32f;
+		this.UsedVolume = 0f;
 	}
 	
 	public bool AddCoin(Coin coin)
 	{
-		if (coin == null)
+		if (coin == null || coin.Mint != typeof(AmericanMint))
 		{
 			return false;
 		}
@@ -54,8 +49,8 @@ public class CoinJar
 		}
 		
 		this.Coins.Add(coin);
-		this.totalValue += coin.Value;
-		this.usedVolume += coin.Volume;
+		this.TotalValue += coin.Value;
+		this.UsedVolume += coin.Volume;
 
 		return true;
 	}
@@ -64,8 +59,8 @@ public class CoinJar
 	{
 		List<Coin> coins = this.Coins;
 		this.Coins = new List<Coin>();
-		this.totalValue = 0;
-		this.usedVolume = 0f;
+		this.TotalValue = 0;
+		this.UsedVolume = 0f;
 		return coins;
 	}
 }
@@ -81,11 +76,12 @@ public class AmericanMint : Mint
 	
 	static AmericanMint()
 	{
+		Type mintType = typeof(AmericanMint);
 		CoinTypes = new List<Coin>();
-		CoinTypes.Add(new Coin(1, 0.0122f));
-		CoinTypes.Add(new Coin(5, 0.0243f));
-		CoinTypes.Add(new Coin(10, 0.0115f));
-		CoinTypes.Add(new Coin(25, 0.027f));
+		CoinTypes.Add(new Coin(mintType, 1, 0.0122f));
+		CoinTypes.Add(new Coin(mintType, 5, 0.0243f));
+		CoinTypes.Add(new Coin(mintType, 10, 0.0115f));
+		CoinTypes.Add(new Coin(mintType, 25, 0.027f));
 	}
 	
 	public override Coin ManufactureCoinOfValue(int value)
@@ -103,7 +99,7 @@ public class AmericanMint : Mint
 		
 		if (modelCoin != null)
 		{
-			return new Coin(modelCoin.Value, modelCoin.Volume);
+			return new Coin(modelCoin.Mint, modelCoin.Value, modelCoin.Volume);
 		}
 		else
 		{
