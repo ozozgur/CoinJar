@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-public abstract class Mint
+namespace CoinJarInterview
 {
-	public abstract Coin ManufactureCoinOfValue(int value);
+    public abstract class Mint
+    {
+        public abstract Coin ManufactureCoinOfValue(int value);
+    }
 }
